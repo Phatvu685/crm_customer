@@ -1,79 +1,38 @@
-# Deploy to Render (quick steps)
+# Deploy CRM lên Render (frontend + backend)
 
-1. Commit and push the `customer-crm-backend` folder to a GitHub repository (branch `main` recommended).
+Cần 1 tài khoản [Render](https://render.com) (đăng nhập bằng GitHub cho nhanh) và repo GitHub chứa project này.
 
-2. On render.com: Create -> Web Service -> Connect your GitHub repo -> Select `customer-crm-backend` and branch `main`.
+## Cách nhanh: Blueprint (`render.yaml`)
 
-3. Choose "Docker" as the environment (Render will use `Dockerfile`).
+1. Push code lên GitHub (cả repo `files 2`, gồm `customer-crm-backend` và `customer-crm-nextjs`).
+2. Vào https://dashboard.render.com → **New** → **Blueprint**.
+3. Chọn repo → Render đọc `render.yaml` và tạo 2 Web Service:
+   - `customer-crm-backend` (API NestJS)
+   - `customer-crm-web` (giao diện Next.js)
+4. Khi Render hỏi **DATABASE_URL**, dán chuỗi Postgres (Neon hiện tại cũng được).
+5. Đợi build xong. Mở URL **customer-crm-web** trên trình duyệt.
 
-4. Set required Environment Variables in Render (Settings -> Environment):
-   - `DATABASE_URL` (Postgres or other DB)
-   - `JWT_SECRET` (your JWT secret)
-   - any other app-specific vars used by your app
+Đăng nhập mặc định: `admin` / `admin123` (đổi ngay sau khi vào được).
 
-5. Start the service. Render will build the Docker image and deploy it. The service URL will be provided.
+## Cách thủ công (nếu không dùng Blueprint)
 
-Local test (build and run locally):
+### Backend
 
-```
-docker build -t crm-backend .
-docker run -p 3000:3000 -e DATABASE_URL="postgres://..." crm-backend
-```
+- **New → Web Service** → chọn repo
+- Root Directory: `customer-crm-backend`
+- Environment: **Docker**
+- Env vars: `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN` = URL frontend (ví dụ `https://customer-crm-web.onrender.com`)
 
----
+### Frontend
 
-## 1) Push code lên GitHub (lệnh sẵn để copy)
+- **New → Web Service** → cùng repo
+- Root Directory: `customer-crm-nextjs`
+- Environment: **Docker**
+- Env var: `NEXT_PUBLIC_API_BASE_URL` = URL backend (ví dụ `https://customer-crm-backend.onrender.com`)
+- Sau khi đổi biến này, **Clear build cache & deploy** lại frontend (vì Next.js nhúng URL lúc build)
 
-Mở terminal ở thư mục `customer-crm-backend` rồi chạy các lệnh dưới (PowerShell/Windows):
+## Lưu ý gói Free
 
-```bash
-git init
-git add .
-git commit -m "Add Docker + Render config"
-git branch -M main
-git remote add origin https://github.com/your-username/your-repo.git
-git push -u origin main
-```
+App có thể ngủ khi không ai vào. Lần mở đầu mất ~30–60 giây.
 
-Thay `https://github.com/your-username/your-repo.git` bằng repo GitHub của bạn.
-
-Nếu repo đã có Git và remote, chỉ cần:
-
-```bash
-git add .
-git commit -m "Prepare for Render: Dockerfile + render.yaml"
-git push
-```
-
-## 2) Từng bước trên Render (UI)
-
-1. Đăng nhập vào https://render.com.
-2. Click `New` → `Web Service`.
-3. Chọn GitHub, kết nối tài khoản nếu chưa kết nối.
-4. Chọn repository của bạn và branch `main`.
-5. Environment: chọn `Docker` (Render sẽ dùng `Dockerfile` trong thư mục root của repo hoặc theo `render.yaml`).
-6. Build Command / Start Command: để trống khi dùng Docker (image tự chạy theo `CMD` trong Dockerfile).
-7. Settings → Environment → Add Environment Variables:
-    - `DATABASE_URL` = giá trị kết nối Postgres
-    - `JWT_SECRET` = bí mật JWT
-    - `CORS_ORIGIN` = ví dụ `https://your-frontend.com`
-    - (Tùy chọn) `PORT` nếu bạn muốn dùng port khác
-8. Click `Create Web Service` → Render sẽ bắt đầu build. Chờ hoàn thành và nhận URL công khai.
-
-## 3) Kiểm tra logs & xử lý lỗi phổ biến
-
-- Vào Dashboard → Service → Logs để xem cả build logs và runtime logs.
-- Lỗi thường gặp:
-   - `PrismaClientInitializationError`: chưa set `DATABASE_URL` đúng hoặc DB chưa reachable.
-   - Build fail do thiếu dependency: kiểm tra `package.json` và `npm ci` logs.
-   - Port conflict: đảm bảo app lắng nghe `process.env.PORT` hoặc dùng giá trị mặc định 3001.
-
-## 4) Chạy và debug local bằng VS Code Docker extension
-
-- Build image từ GUI: Docker panel → Images → Build Image (chọn folder chứa Dockerfile).
-- Run container: Images → chọn image → Run (detached) → thêm `--env-file .env` và port mapping `3001:3001`.
-- Xem logs trong Docker panel hoặc terminal.
-
----
-
-File liên quan: [customer-crm-backend/Dockerfile](customer-crm-backend/Dockerfile), [customer-crm-backend/.env.example](customer-crm-backend/.env.example), [customer-crm-backend/render.yaml](customer-crm-backend/render.yaml)
+File `.exe` desktop không đưa lên Render.

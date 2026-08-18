@@ -2,12 +2,12 @@
 // QueryCustomerDto: các query param cho phép lọc danh sách khách hàng,
 // port lại từ bộ lọc trong renderCustomerList()/renderOrders() bản gốc.
 // ============================================================================
-import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
-import { CustomerStage, CustomerType, PaymentStatus } from '@prisma/client';
+import { IsIn, IsOptional, IsString } from 'class-validator';
+import type { CustomerStage, CustomerType, PaymentStatus } from '@prisma/client';
 
 export class QueryCustomerDto {
   @IsOptional()
-  @IsEnum(CustomerStage)
+  @IsIn(['order', 'cskh'])
   stage?: CustomerStage; // lọc theo tab: 'order' hoặc 'cskh'
 
   @IsOptional()
@@ -15,7 +15,7 @@ export class QueryCustomerDto {
   search?: string; // tìm theo tên hoặc số điện thoại
 
   @IsOptional()
-  @IsEnum(CustomerType)
+  @IsIn(['moi', 'cu', 'tiemnang'])
   type?: CustomerType;
 
   @IsOptional()
@@ -23,7 +23,7 @@ export class QueryCustomerDto {
   staffUserId?: string; // truyền "none" để lọc khách CHƯA phân công, hoặc id dạng chuỗi số
 
   @IsOptional()
-  @IsEnum(PaymentStatus)
+  @IsIn(['da_tra', 'chua_tra'])
   paymentStatus?: PaymentStatus;
 
   @IsOptional()

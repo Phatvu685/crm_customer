@@ -1,8 +1,8 @@
-import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Min } from 'class-validator';
-import { StockType } from '@prisma/client';
+import { IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Min } from 'class-validator';
+import type { StockType } from '@prisma/client';
 
 export class CreateStockEntryDto {
-  @IsEnum(StockType, { message: 'type phải là nhap hoặc xuat' })
+  @IsIn(['nhap', 'xuat'], { message: 'type phải là nhap hoặc xuat' })
   type: StockType;
 
   @IsInt()

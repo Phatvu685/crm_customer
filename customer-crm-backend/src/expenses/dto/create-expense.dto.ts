@@ -3,11 +3,11 @@
 // (Khoản chi_phi tự sinh từ phiếu nhập kho được tạo qua StockEntriesService,
 //  không đi qua endpoint này — xem thêm expenses.controller.ts)
 // ============================================================================
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { ExpenseKind } from '@prisma/client';
+import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import type { ExpenseKind } from '@prisma/client';
 
 export class CreateExpenseDto {
-  @IsEnum(ExpenseKind, { message: 'kind phải là chi_phi | von | hoan_von' })
+  @IsIn(['chi_phi', 'von', 'hoan_von'], { message: 'kind phải là chi_phi | von | hoan_von' })
   kind: ExpenseKind;
 
   @IsString()

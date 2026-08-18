@@ -1,8 +1,8 @@
 // ============================================================================
 // CreateComboDto
 // ============================================================================
-import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Min } from 'class-validator';
-import { OfferType } from '@prisma/client';
+import { IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Min } from 'class-validator';
+import type { OfferType } from '@prisma/client';
 
 export class CreateComboDto {
   @IsString()
@@ -30,7 +30,7 @@ export class CreateComboDto {
   @Min(0)
   unitPrice: number; // đơn giá / đơn vị
 
-  @IsEnum(OfferType, { message: 'offerType phải là percent | money | kg' })
+  @IsIn(['percent', 'money', 'kg'], { message: 'offerType phải là percent | money | kg' })
   offerType: OfferType;
 
   @IsNumber()

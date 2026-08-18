@@ -6,7 +6,7 @@
 // ============================================================================
 import {
   IsBoolean,
-  IsEnum,
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -15,7 +15,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { CustomerStage, CustomerType, PaymentStatus } from '@prisma/client';
+import type { CustomerStage, CustomerType, PaymentStatus } from '@prisma/client';
 
 export class CreateCustomerDto {
   @IsString()
@@ -30,7 +30,7 @@ export class CreateCustomerDto {
   @IsString()
   address?: string;
 
-  @IsEnum(CustomerType, { message: 'type phải là moi | cu | tiemnang' })
+  @IsIn(['moi', 'cu', 'tiemnang'], { message: 'type phải là moi | cu | tiemnang' })
   type: CustomerType;
 
   @IsOptional()
@@ -66,11 +66,11 @@ export class CreateCustomerDto {
   productId?: number;
 
   @IsOptional()
-  @IsEnum(CustomerStage, { message: 'stage phải là order | cskh' })
+  @IsIn(['order', 'cskh'], { message: 'stage phải là order | cskh' })
   stage?: CustomerStage;
 
   @IsOptional()
-  @IsEnum(PaymentStatus, { message: 'paymentStatus phải là da_tra | chua_tra' })
+  @IsIn(['da_tra', 'chua_tra'], { message: 'paymentStatus phải là da_tra | chua_tra' })
   paymentStatus?: PaymentStatus;
 
   @IsOptional()

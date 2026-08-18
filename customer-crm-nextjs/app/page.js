@@ -22,8 +22,14 @@ export default function Page() {
   const [xlsxReady, setXlsxReady] = useState(false);
   const [apiReady, setApiReady] = useState(false);
 
-  const apiBase =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001/api";
+  const rawApiBase = (
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001/api"
+  )
+    .trim()
+    .replace(/\/$/, "");
+  const apiBase = rawApiBase.endsWith("/api")
+    ? rawApiBase
+    : `${rawApiBase}/api`;
 
   return (
     <>
